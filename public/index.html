@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data GO</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway"
+      rel="stylesheet"
+    />
+    <link href="/styles.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <h1 class="title">DATA - a REST API</h1>
+    <div id="homepage">
+      <h1>Provide data for the dataset!</h1>
+      <div id="dataset"></div>
+    </div>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@15/dist/reactjs"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+    <!-- Create React Component -->
+    <script type="text/babel">
+      var Dataset = React.createClass({
+        getInitialState: function () {
+          return {
+            dataset: [],
+          };
+        },
+        render: function () {
+          var dataset = this.state.dataset;
+          dataset = dataset.map(function (data, index) {
+            return (
+              <li key={index}>
+                <span>{data.obj.available}</span>
+                <span className='name'>{data.obj.name}</span>
+                <span className='rank'>{data.obj.rank}</span>
+                <span className='dist'>{Math.floor(ninja.dis / 1000)}km</span>
+              </li>
+            );
+          });
+          return (
+            <div id='data-container'>
+              <form id='search' onSubmit={this.handleSubmit}>
+                <label>Enter your latitude: </label>
+                <input type='text' ref='lat' placeholder='latitude' required />
+                <label>Enter your longitude: </label>
+                <input type='text' ref='lng' placeholder='longitude' required />
+                <input type='submit' value='Find Data' />
+              </form>
+              <ul>{dataset}</ul>
+            </div>
+          );
+        },
+        handleSubmit: function (e) {
+          e.preventDefault();
+          var lat = this.refs.lat.value;
+          var lng = this.refs.lng.value;
+          fetch("/api/dataset?lat=" + lat + "&lng=" + lng)
+            .then(function (data) {
+              return data.json();
+            })
+            .then((json) => {
+              this.setState({ dataset: json });
+            });
+        },
+      });
+      ReactDOM.render(<Dataset />, document.getElementById("dataset"));
+    </script>
+  </body>
+</html>
